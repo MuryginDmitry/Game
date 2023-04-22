@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -50,6 +51,7 @@ public class Main {
             while ((entry = zin.getNextEntry()) != null) {
                 name = entry.getName();
                 FileOutputStream fout = new FileOutputStream(unpackedFilePath+"/"+ name);
+                saveListToArchive.add(unpackedFilePath+"/"+ name);
                 for (int c = zin.read(); c != -1; c = zin.read()) {
                     fout.write(c);
                 }
@@ -60,6 +62,8 @@ public class Main {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
+        File file = new File(zipFilePath);
+        file.delete();
     }
 
     public static GameProgress openProgress (String saveGamePath) {
@@ -105,15 +109,12 @@ public class Main {
 
 
     public static void main(String[] args) {
-        newFolder("D://Games/src");
-        newFolder("D://Games/res");
-        newFolder("D://Games/savegames");
-        newFolder("D://Games/temp");
-        newFolder("D://Games/src/main");
-        newFolder("D://Games/src/test");
-        newFolder("D://Games/res/drawables");
-        newFolder("D://Games/res/vectors");
-        newFolder("D://Games/res/icons");
+        List <String> directoryList = new ArrayList<>(Arrays.asList("D://Games/src","D://Games/res",
+                "D://Games/savegames","D://Games/temp","D://Games/src/main","D://Games/src/test",
+                "D://Games/res/drawables","D://Games/res/vectors","D://Games/res/icons"));
+        for (String directory : directoryList) {
+            newFolder (directory);
+        }
         newFile("D://Games/src/main", "Main.java");
         newFile("D://Games/src/main", "Utils.java");
         newFile("D://Games/temp", "temp.txt");
@@ -126,6 +127,7 @@ public class Main {
         zipFiles("D://Games/savegames/zip.zip",saveListToArchive);
         openZip("D://Games/savegames/zip.zip","D://Games/savegames");
         System.out.println(openProgress("D://Games/savegames/save2.dat"));
+        zipFiles("D://Games/savegames/zip2.zip",saveListToArchive);
 
         try (FileWriter writer = new FileWriter("D://Games/temp/temp.txt", false)) {
             writer.write(String.valueOf(log));
